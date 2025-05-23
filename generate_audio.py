@@ -24,6 +24,9 @@ try:
     HAS_PYDUB = True
 except ImportError:
     HAS_PYDUB = False
+    # Fallback to using ffmpeg directly
+    import subprocess
+    import shutil
 
 class PodcastAudioGenerator:
     def __init__(self):
@@ -139,9 +142,13 @@ class PodcastAudioGenerator:
             return None
             
         if not HAS_PYDUB:
-            print("Error: pydub is not available.")
-            print("Please install: pip install pydub")
-            return None
+            # Check if ffmpeg is available as fallback
+            if not shutil.which('ffmpeg'):
+                print("Error: Neither pydub nor ffmpeg is available for audio processing.")
+                print("Please install either pydub (pip install pydub) or ffmpeg (brew install ffmpeg)")
+                return None
+            else:
+                print("Note: Using ffmpeg for audio processing (pydub not available)")
 
         # Try to initialize TTS client now that credentials should be set up
         if not self.tts_client:
@@ -208,20 +215,54 @@ class PodcastAudioGenerator:
         
         # Combine all audio files
         print(f"\nCombining {len(temp_files)} audio segments...")
-        combined = AudioSegment.empty()
         
-        for temp_file in tqdm(temp_files, desc="Combining segments"):
+        if HAS_PYDUB:
+            # Use pydub if available
+            combined = AudioSegment.empty()
+            
+            for temp_file in tqdm(temp_files, desc="Combining segments"):
+                try:
+                    segment = AudioSegment.from_mp3(str(temp_file))
+                    combined += segment
+                    # Add pause between segments
+                    combined += AudioSegment.silent(duration=500)  # 0.5 second pause
+                except Exception as e:
+                    print(f"Error combining file {temp_file}: {e}")
+            
+            # Export final podcast
+            print(f"Exporting podcast to {output_path}...")
+            combined.export(output_path, format="mp3", bitrate="192k")
+            duration_seconds = len(combined) / 1000
+        else:
+            # Use ffmpeg directly as fallback
+            print("Using ffmpeg for audio concatenation...")
+            
+            # Create a temporary file list for ffmpeg
+            filelist_path = self.temp_dir / "filelist.txt"
+            with open(filelist_path, 'w') as f:
+                for temp_file in temp_files:
+                    f.write(f"file '{temp_file.absolute()}'\n")
+            
+            # Use ffmpeg to concatenate files
             try:
-                segment = AudioSegment.from_mp3(str(temp_file))
-                combined += segment
-                # Add pause between segments
-                combined += AudioSegment.silent(duration=500)  # 0.5 second pause
+                cmd = [
+                    'ffmpeg', '-f', 'concat', '-safe', '0', 
+                    '-i', str(filelist_path), 
+                    '-c', 'copy', '-y', output_path
+                ]
+                subprocess.run(cmd, check=True, capture_output=True)
+                
+                # Get duration using ffprobe
+                duration_cmd = ['ffprobe', '-v', 'quiet', '-show_entries', 'format=duration', '-of', 'csv=p=0', output_path]
+                result = subprocess.run(duration_cmd, capture_output=True, text=True)
+                duration_seconds = float(result.stdout.strip()) if result.stdout.strip() else 0
+                
+            except subprocess.CalledProcessError as e:
+                print(f"Error combining audio with ffmpeg: {e}")
+                return None
             except Exception as e:
-                print(f"Error combining file {temp_file}: {e}")
-        
-        # Export final podcast
-        print(f"Exporting podcast to {output_path}...")
-        combined.export(output_path, format="mp3", bitrate="192k")
+                print(f"Error getting audio duration: {e}")
+                duration_seconds = 0
         
         # Clean up temp files
         for temp_file in temp_files:
@@ -236,7 +277,7 @@ class PodcastAudioGenerator:
         except:
             pass
         
-        duration_minutes = len(combined) / 1000 / 60
+        duration_minutes = duration_seconds / 60
         print(f"\nPodcast generated successfully!")
         print(f"File: {output_path}")
         print(f"Duration: {duration_minutes:.1f} minutes")
