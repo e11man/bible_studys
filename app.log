@@ -1,0 +1,15 @@
+============================================================
+BIBLE PODCAST GENERATOR - WEB GUI
+============================================================
+Available Bible versions: ['NKJV', 'ESV']
+Audio generation available: True
+Video generation available: True
+Google Cloud credentials: ✗
+
+Starting Flask server...
+Access the application at: http://localhost:5001
+============================================================
+ * Serving Flask app 'main'
+ * Debug mode: on
+Address already in use
+Port 5001 is in use by another program. Either identify and stop that program, or start the server with a different port.

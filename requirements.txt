@@ -1,5 +1,8 @@
+flask>=3.0.0
 requests>=2.31.0
-tqdm>=4.66.1
-google-cloud-texttospeech>=2.14.1
+google-cloud-texttospeech>=2.27.0
 pydub>=0.25.1
-pathlib>=1.0.1 
+tqdm>=4.65.0
+moviepy>=1.0.3
+pillow>=10.0.0
+werkzeug>=3.0.0 

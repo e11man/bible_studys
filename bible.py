@@ -480,10 +480,17 @@ class PodcastScriptGenerator:
     def generate_commentary_based_script(self, commentary_text: str, output_file: str):
         """Generate script from commentary text (original functionality)."""
         print("Extracting sections from commentary...")
+        
+        # Check if commentary text is meaningful
+        if not commentary_text or len(commentary_text.strip()) < 20:
+            print("Commentary text is empty or too short for processing.")
+            return None
+            
         sections = self.extract_verse_references(commentary_text)
         
         if not sections:
-            print("No sections found. Please check the commentary format.")
+            print("No sections found. Commentary might not be in the expected format.")
+            print("Expected format: 'Section X: BookName Chapter:Verse-Verse - Title'")
             return None
         
         print(f"Found {len(sections)} sections. Generating script...")
@@ -524,15 +531,19 @@ class PodcastScriptGenerator:
             script_lines.append("---")
             script_lines.append("")
         
-        # Write to file
-        with open(output_file, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(script_lines))
-        
-        print(f"Podcast script generated successfully: {output_file}")
-        print(f"Total sections processed: {len(sections)}")
-        print(f"Bible version: {self.bible_version}")
+        try:
+            # Write to file
+            with open(output_file, 'w', encoding='utf-8') as f:
+                f.write('\n'.join(script_lines))
             
-        return output_file
+            print(f"Podcast script generated successfully: {output_file}")
+            print(f"Total sections processed: {len(sections)}")
+            print(f"Bible version: {self.bible_version}")
+                
+            return output_file
+        except Exception as e:
+            print(f"Error writing script file: {e}")
+            return None
 
     def parse_podcast_script(self, script_path: str) -> List[Dict]:
         """Parse the podcast script to extract HOST and GUEST segments."""

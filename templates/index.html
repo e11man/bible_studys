@@ -12,6 +12,7 @@
             --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
             --secondary-gradient: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 50%, #6366f1 100%);
             --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             --dark-gradient: linear-gradient(135deg, #1f2937 0%, #111827 100%);
             --glass-bg: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
@@ -101,6 +102,10 @@
             position: relative;
         }
 
+        .card-header.video-header {
+            background: var(--warning-gradient);
+        }
+
         .card-header::after {
             content: '';
             position: absolute;
@@ -184,6 +189,16 @@
         .btn-success:hover {
             transform: translateY(-1px);
             box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-warning {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
         }
 
         .btn-outline-primary {
@@ -272,6 +287,12 @@
             color: #1e40af;
         }
 
+        .alert-warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1));
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            color: #92400e;
+        }
+
         .alert-light {
             background: linear-gradient(135deg, rgba(243, 244, 246, 0.8), rgba(229, 231, 235, 0.8));
             border: 1px solid rgba(209, 213, 219, 0.3);
@@ -293,6 +314,20 @@
         .file-item:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-item.selectable {
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .file-item.selectable:hover {
+            border-color: #6366f1;
+        }
+
+        .file-item.selected {
+            border-color: #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
         }
 
         .commentary-section {
@@ -426,6 +461,62 @@
             box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
         }
 
+        .drop-zone {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .audio-selector {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .audio-file-item {
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .audio-file-item:hover {
+            border-color: #6366f1;
+            transform: translateY(-1px);
+        }
+
+        .audio-file-item.selected {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .file-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-details {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2.5rem;
@@ -438,6 +529,12 @@
             .btn-primary {
                 font-size: 1rem;
                 padding: 0.875rem 2rem;
+            }
+            
+            .file-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
             }
         }
 
@@ -465,7 +562,7 @@
             <i class="fas fa-headphones" style="font-size: 70px; color: rgba(255,255,255,0.1);"></i>
         </div>
         <div class="floating-shape">
-            <i class="fas fa-cross" style="font-size: 50px; color: rgba(255,255,255,0.1);"></i>
+            <i class="fas fa-video" style="font-size: 50px; color: rgba(255,255,255,0.1);"></i>
         </div>
     </div>
 
@@ -478,7 +575,7 @@
                         <i class="fas fa-microphone-alt me-3 icon-highlight"></i>
                         Bible Podcast Generator
                     </h1>
-                    <p class="hero-subtitle">Transform sacred scripture and theological commentary into professional, AI-powered podcast experiences</p>
+                    <p class="hero-subtitle">Transform sacred scripture and theological commentary into professional, AI-powered podcast experiences and YouTube-ready videos</p>
                 </div>
             </div>
         </div>
@@ -644,10 +741,151 @@ For commentary-based podcasts, paste your theological analysis, and the system w
                                         <i class="fas fa-file-audio me-3" style="font-size: 1.2rem; color: #10b981;"></i>
                                         <strong id="audioFilename"></strong>
                                     </span>
-                                    <button class="btn btn-outline-primary" id="downloadAudio">
+                                    <div>
+                                        <button class="btn btn-outline-primary me-3" id="downloadAudio">
+                                            <i class="fas fa-download me-2"></i>
+                                            Download Audio
+                                        </button>
+                                        <button class="btn btn-warning" id="createVideoBtn">
+                                            <i class="fas fa-video me-2"></i>
+                                            Create Video
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Generation Section -->
+                <div class="glass-card mb-5" id="videoSection">
+                    <div class="card-header video-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-video me-3"></i>
+                            Video Generation for YouTube
+                        </h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Audio Selection -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-music me-2 icon-highlight"></i>
+                                    Step 1: Select Audio File
+                                </h5>
+                                <button type="button" class="btn btn-sm btn-outline-primary" id="refreshAudioFiles">
+                                    <i class="fas fa-sync-alt me-1"></i>
+                                    Refresh
+                                </button>
+                            </div>
+                            <div id="audioSelector" class="audio-selector">
+                                <div class="text-center text-muted py-4">
+                                    <i class="fas fa-spinner fa-spin me-2"></i>
+                                    Loading available audio files...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image Upload -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">
+                                <i class="fas fa-image me-2 icon-highlight"></i>
+                                Step 2: Add Background Image
+                            </h5>
+                            <div class="drop-zone" id="imageDropZone">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-muted"></i>
+                                <h5>Drop image here or click to browse</h5>
+                                <p class="text-muted mb-0">Supports PNG, JPG, GIF, WebP. Recommended: 1280x720 or higher resolution</p>
+                                <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                            </div>
+                            <div id="imagePreview" class="mt-3" style="display: none;">
+                                <div class="alert alert-success">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="fas fa-check-circle me-2"></i>
+                                            <strong id="uploadedImageName"></strong>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="changeImage">
+                                            <i class="fas fa-edit me-1"></i>
+                                            Change
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Video Options -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">
+                                <i class="fas fa-cog me-2 icon-highlight"></i>
+                                Step 3: Video Options
+                            </h5>
+                            <div class="mb-3">
+                                <label for="videoTitle" class="form-label">Video Title (Optional)</label>
+                                <input type="text" class="form-control" id="videoTitle" 
+                                       placeholder="Enter a title for your video...">
+                                <div class="form-text text-muted">
+                                    This will be used for naming the output file
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="videoFolder" class="form-label">Output Folder (Optional)</label>
+                                <input type="text" class="form-control" id="videoFolder" 
+                                       placeholder="Enter a folder name to organize your videos...">
+                                <div class="form-text text-muted">
+                                    Videos will be saved in a subfolder within the output directory
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Generate Video Button -->
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-warning btn-lg" id="generateVideoBtn" disabled>
+                                <i class="fas fa-play me-3"></i>
+                                Generate YouTube Video
+                                <i class="fas fa-youtube ms-3"></i>
+                            </button>
+                        </div>
+
+                        <!-- Video Progress -->
+                        <div id="videoProgress" class="progress-container">
+                            <h5>
+                                <i class="fas fa-video fa-pulse me-3"></i>
+                                Creating YouTube Video
+                            </h5>
+                            <div class="progress mb-3">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                     role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-message">Initializing video processing...</div>
+                            <div class="alert alert-warning mt-3">
+                                <i class="fas fa-clock me-2"></i>
+                                <strong>Video generation in progress:</strong> This process may take several minutes depending on audio length. The video will be optimized for fast YouTube upload with good quality.
+                            </div>
+                        </div>
+
+                        <!-- Video Result -->
+                        <div id="videoResult" class="job-result">
+                            <div class="alert alert-success">
+                                <h5 class="alert-heading">
+                                    <i class="fas fa-check-circle me-3"></i>
+                                    Video Generated Successfully!
+                                </h5>
+                                <p class="mb-3">Your YouTube-ready video is complete! The video features your audio with the selected background image.</p>
+                                <div class="file-item">
+                                    <span>
+                                        <i class="fas fa-file-video me-3" style="font-size: 1.2rem; color: #f59e0b;"></i>
+                                        <strong id="videoFilename"></strong>
+                                        <div class="file-details" id="videoDetails"></div>
+                                    </span>
+                                    <button class="btn btn-outline-primary" id="downloadVideo">
                                         <i class="fas fa-download me-2"></i>
-                                        Download Audio
+                                        Download Video
                                     </button>
+                                </div>
+                                <div class="alert alert-info mt-3">
+                                    <i class="fas fa-youtube me-2"></i>
+                                    <strong>Ready for YouTube!</strong> Your video is optimized for YouTube upload. Simply log into your YouTube channel and upload this MP4 file.
                                 </div>
                             </div>
                         </div>
@@ -667,20 +905,29 @@ For commentary-based podcasts, paste your theological analysis, and the system w
                         <div class="mb-4">
                             <h5 class="mb-3">
                                 <i class="fas fa-microphone me-2 icon-highlight"></i>
-                                Audio Generation Setup
+                                Generation Capabilities
                             </h5>
                             
                             <div class="row g-3 mb-4">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="config-status">
                                         <i class="fas fa-puzzle-piece me-3" style="color: #6366f1;"></i>
                                         <div>
-                                            <strong>Dependencies:</strong>
+                                            <strong>Audio:</strong>
                                             <span id="depsStatus" class="badge ms-2"></span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
+                                    <div class="config-status">
+                                        <i class="fas fa-video me-3" style="color: #6366f1;"></i>
+                                        <div>
+                                            <strong>Video:</strong>
+                                            <span id="videoStatus" class="badge ms-2"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
                                     <div class="config-status">
                                         <i class="fas fa-key me-3" style="color: #6366f1;"></i>
                                         <div>
@@ -721,13 +968,13 @@ For commentary-based podcasts, paste your theological analysis, and the system w
                                 <div class="col-md-6">
                                     <ol class="mb-0">
                                         <li><strong>Bible Files:</strong> Ensure JSON files are in <code>bibles/</code> directory</li>
-                                        <li><strong>Dependencies:</strong> Run <code>pip install google-cloud-texttospeech pydub</code></li>
+                                        <li><strong>Audio:</strong> Run <code>pip install google-cloud-texttospeech pydub</code></li>
                                     </ol>
                                 </div>
                                 <div class="col-md-6">
                                     <ol start="3" class="mb-0">
-                                        <li><strong>Google Cloud:</strong> Set up Text-to-Speech API & download service account JSON</li>
-                                        <li><strong>Credentials:</strong> Configure the file path above</li>
+                                        <li><strong>Video:</strong> Run <code>pip install moviepy Pillow</code></li>
+                                        <li><strong>Google Cloud:</strong> Set up Text-to-Speech API & configure credentials</li>
                                     </ol>
                                 </div>
                             </div>
@@ -747,7 +994,7 @@ For commentary-based podcasts, paste your theological analysis, and the system w
                         Bible Podcast Generator
                     </h5>
                     <p class="text-white-50 mb-0">
-                        Transforming sacred scripture into accessible, professional audio experiences through the power of AI
+                        Transforming sacred scripture into accessible, professional audio and video experiences through the power of AI
                     </p>
                 </div>
             </div>
@@ -759,12 +1006,17 @@ For commentary-based podcasts, paste your theological analysis, and the system w
         // Global variables
         let currentScriptJob = null;
         let currentAudioJob = null;
+        let currentVideoJob = null;
         let currentScriptPath = null;
+        let currentAudioPath = null;
+        let currentImagePath = null;
+        let selectedAudioFile = null;
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             loadBibleVersions();
             loadAudioConfig();
+            loadAudioFiles();
             setupEventListeners();
             initializeAnimations();
         });
@@ -802,10 +1054,14 @@ For commentary-based podcasts, paste your theological analysis, and the system w
                 .then(response => response.json())
                 .then(data => {
                     const depsStatus = document.getElementById('depsStatus');
+                    const videoStatus = document.getElementById('videoStatus');
                     const credsStatus = document.getElementById('credsStatus');
                     
                     depsStatus.textContent = data.has_audio_generation ? '✅ Available' : '❌ Missing';
                     depsStatus.className = `badge ${data.has_audio_generation ? 'bg-success' : 'bg-danger'}`;
+                    
+                    videoStatus.textContent = data.has_video_generation ? '✅ Available' : '❌ Missing';
+                    videoStatus.className = `badge ${data.has_video_generation ? 'bg-success' : 'bg-danger'}`;
                     
                     credsStatus.textContent = data.has_credentials ? '✅ Configured' : '⚠️ Not Set';
                     credsStatus.className = `badge ${data.has_credentials ? 'bg-success' : 'bg-warning'}`;
@@ -814,6 +1070,326 @@ For commentary-based podcasts, paste your theological analysis, and the system w
                         document.getElementById('credentialsPath').value = data.credentials_path;
                     }
                 });
+        }
+
+        function loadAudioFiles() {
+            fetch('/api/audio-files')
+                .then(response => response.json())
+                .then(data => {
+                    const selector = document.getElementById('audioSelector');
+                    
+                    if (data.audio_files && data.audio_files.length > 0) {
+                        selector.innerHTML = '';
+                        
+                        data.audio_files.forEach(file => {
+                            const item = document.createElement('div');
+                            item.className = 'audio-file-item';
+                            item.dataset.path = file.path;
+                            
+                            item.innerHTML = `
+                                <div class="file-info">
+                                    <div>
+                                        <i class="fas fa-file-audio me-2" style="color: #10b981;"></i>
+                                        <strong>${file.filename}</strong>
+                                    </div>
+                                    <div class="text-muted">
+                                        ${file.size_mb} MB • ${file.duration_str}
+                                    </div>
+                                </div>
+                                <div class="file-details">
+                                    ${file.relative_path}
+                                </div>
+                            `;
+                            
+                            item.addEventListener('click', () => selectAudioFile(item, file));
+                            selector.appendChild(item);
+                        });
+                        
+                        // Auto-select the current audio if available
+                        if (currentAudioPath) {
+                            const currentItem = selector.querySelector(`[data-path="${currentAudioPath}"]`);
+                            if (currentItem) {
+                                const file = data.audio_files.find(f => f.path === currentAudioPath);
+                                selectAudioFile(currentItem, file);
+                            }
+                        }
+                    } else {
+                        selector.innerHTML = `
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-info-circle me-2"></i>
+                                No audio files found. Generate some audio first!
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading audio files:', error);
+                    document.getElementById('audioSelector').innerHTML = `
+                        <div class="text-center text-danger py-4">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Error loading audio files
+                        </div>
+                    `;
+                });
+        }
+
+        function selectAudioFile(element, file) {
+            // Remove previous selection
+            document.querySelectorAll('.audio-file-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Select current
+            element.classList.add('selected');
+            selectedAudioFile = file;
+            currentAudioPath = file.path;
+            
+            checkVideoReadiness();
+        }
+
+        function handleImageUpload() {
+            const fileInput = document.getElementById('imageUpload');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            fetch('/api/upload-image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentImagePath = data.filepath;
+                    document.getElementById('uploadedImageName').textContent = data.filename;
+                    document.getElementById('imagePreview').style.display = 'block';
+                    checkVideoReadiness();
+                    showAlert('Image uploaded successfully!', 'success');
+                } else {
+                    showAlert('Error: ' + data.error, 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading image:', error);
+                showAlert('Failed to upload image', 'danger');
+            });
+        }
+
+        function checkVideoReadiness() {
+            const generateBtn = document.getElementById('generateVideoBtn');
+            
+            if (selectedAudioFile && currentImagePath) {
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = `
+                    <i class="fas fa-play me-3"></i>
+                    Generate YouTube Video
+                    <i class="fas fa-youtube ms-3"></i>
+                `;
+            } else {
+                generateBtn.disabled = true;
+                generateBtn.innerHTML = `
+                    <i class="fas fa-exclamation-circle me-3"></i>
+                    Select Audio & Image First
+                `;
+            }
+        }
+
+        function generateVideo() {
+            if (!selectedAudioFile || !currentImagePath) {
+                showAlert('Please select an audio file and upload a background image.', 'warning');
+                return;
+            }
+            
+            const title = document.getElementById('videoTitle').value;
+            const folder = document.getElementById('videoFolder').value;
+            
+            showProgress('video');
+            
+            fetch('/api/generate-video', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    audio_path: selectedAudioFile.path,
+                    image_path: currentImagePath,
+                    title: title,
+                    folder_name: folder
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.job_id) {
+                    currentVideoJob = data.job_id;
+                    pollProgress('video', data.job_id);
+                } else {
+                    showError('video', data.error || 'Failed to start video generation');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('video', 'Network error occurred');
+            });
+        }
+
+        function setCredentials() {
+            const credentialsPath = document.getElementById('credentialsPath').value;
+            
+            if (!credentialsPath) {
+                showAlert('Please enter a credentials path.', 'warning');
+                return;
+            }
+            
+            fetch('/api/config/audio', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ credentials_path: credentialsPath })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('Credentials path set successfully!', 'success');
+                    loadAudioConfig();
+                } else {
+                    showAlert('Error: ' + data.message, 'danger');
+                }
+            });
+        }
+
+        function showProgress(type) {
+            document.getElementById(`${type}Progress`).style.display = 'block';
+            document.getElementById(`${type}Result`).style.display = 'none';
+            
+            if (type === 'script') {
+                const btn = document.getElementById('generateBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-3"></i>Generating Script...<i class="fas fa-magic ms-3"></i>';
+            } else if (type === 'video') {
+                const btn = document.getElementById('generateVideoBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-3"></i>Creating Video...<i class="fas fa-video ms-3"></i>';
+            }
+        }
+
+        function pollProgress(type, jobId) {
+            fetch(`/api/progress/${jobId}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateProgress(type, data);
+                    
+                    if (data.status === 'processing') {
+                        setTimeout(() => pollProgress(type, jobId), 1000);
+                    } else if (data.status === 'completed') {
+                        showResult(type, data);
+                    } else if (data.status === 'error') {
+                        showError(type, data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error polling progress:', error);
+                    showError(type, 'Error checking progress');
+                });
+        }
+
+        function updateProgress(type, data) {
+            const progressBar = document.querySelector(`#${type}Progress .progress-bar`);
+            const progressMessage = document.querySelector(`#${type}Progress .progress-message`);
+            
+            progressBar.style.width = data.progress + '%';
+            progressMessage.textContent = data.message;
+        }
+
+        function showResult(type, data) {
+            document.getElementById(`${type}Progress`).style.display = 'none';
+            document.getElementById(`${type}Result`).style.display = 'block';
+            
+            if (type === 'script') {
+                document.getElementById('scriptFilename').textContent = data.filename;
+                document.getElementById('downloadScript').onclick = () => downloadFile(data.output_file);
+                currentScriptPath = data.output_file;
+                
+                // Re-enable generate button
+                const btn = document.getElementById('generateBtn');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic me-3"></i>Generate Podcast Script<i class="fas fa-arrow-right ms-3"></i>';
+                
+                // Scroll to result
+                document.getElementById('scriptResult').scrollIntoView({ behavior: 'smooth' });
+                
+            } else if (type === 'audio') {
+                document.getElementById('audioFilename').textContent = data.filename;
+                document.getElementById('downloadAudio').onclick = () => downloadFile(data.output_file);
+                currentAudioPath = data.output_file;
+                
+                // Refresh audio files list for video generation
+                loadAudioFiles();
+                
+                // Scroll to result
+                document.getElementById('audioResult').scrollIntoView({ behavior: 'smooth' });
+                
+            } else if (type === 'video') {
+                document.getElementById('videoFilename').textContent = data.filename;
+                document.getElementById('downloadVideo').onclick = () => downloadFile(data.output_file);
+                
+                // Show video details if available
+                if (data.video_info) {
+                    const details = document.getElementById('videoDetails');
+                    details.textContent = `Duration: ${data.video_info.duration_str || 'Unknown'} • Size: ${data.video_info.size_mb || 'Unknown'} MB`;
+                }
+                
+                // Re-enable generate button
+                const btn = document.getElementById('generateVideoBtn');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-play me-3"></i>Generate YouTube Video<i class="fas fa-youtube ms-3"></i>';
+                
+                // Scroll to result
+                document.getElementById('videoResult').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function showError(type, message) {
+            document.getElementById(`${type}Progress`).style.display = 'none';
+            document.getElementById(`${type}Result`).innerHTML = 
+                `<div class="alert alert-danger">
+                    <h5 class="alert-heading">
+                        <i class="fas fa-exclamation-triangle me-3"></i>
+                        Generation Failed
+                    </h5>
+                    <p class="mb-0">${message}</p>
+                </div>`;
+            document.getElementById(`${type}Result`).style.display = 'block';
+            
+            if (type === 'script') {
+                const btn = document.getElementById('generateBtn');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic me-3"></i>Generate Podcast Script<i class="fas fa-arrow-right ms-3"></i>';
+            } else if (type === 'video') {
+                const btn = document.getElementById('generateVideoBtn');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-play me-3"></i>Generate YouTube Video<i class="fas fa-youtube ms-3"></i>';
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        function downloadFile(filepath) {
+            window.open(`/api/download/${filepath}`, '_blank');
         }
 
         function setupEventListeners() {
@@ -830,8 +1406,42 @@ For commentary-based podcasts, paste your theological analysis, and the system w
             // Audio generation
             document.getElementById('generateAudioBtn').addEventListener('click', generateAudio);
             
+            // Video creation
+            document.getElementById('generateVideoBtn').addEventListener('click', generateVideo);
+            
+            // Image upload
+            const imageDropZone = document.getElementById('imageDropZone');
+            const imageUpload = document.getElementById('imageUpload');
+            
+            imageDropZone.addEventListener('click', () => imageUpload.click());
+            imageUpload.addEventListener('change', handleImageUpload);
+            document.getElementById('changeImage').addEventListener('click', () => imageUpload.click());
+            
+            // Drag and drop
+            imageDropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                imageDropZone.classList.add('dragover');
+            });
+            
+            imageDropZone.addEventListener('dragleave', () => {
+                imageDropZone.classList.remove('dragover');
+            });
+            
+            imageDropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                imageDropZone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    imageUpload.files = files;
+                    handleImageUpload();
+                }
+            });
+            
             // Credentials setting
             document.getElementById('setCredentials').addEventListener('click', setCredentials);
+            
+            // Refresh audio files
+            document.getElementById('refreshAudioFiles').addEventListener('click', loadAudioFiles);
         }
 
         function clearValidation() {
@@ -958,135 +1568,6 @@ For commentary-based podcasts, paste your theological analysis, and the system w
                 console.error('Error:', error);
                 showError('audio', 'Network error occurred');
             });
-        }
-
-        function setCredentials() {
-            const credentialsPath = document.getElementById('credentialsPath').value;
-            
-            if (!credentialsPath) {
-                showAlert('Please enter a credentials path.', 'warning');
-                return;
-            }
-            
-            fetch('/api/config/audio', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ credentials_path: credentialsPath })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showAlert('Credentials path set successfully!', 'success');
-                    loadAudioConfig();
-                } else {
-                    showAlert('Error: ' + data.message, 'danger');
-                }
-            });
-        }
-
-        function showProgress(type) {
-            document.getElementById(`${type}Progress`).style.display = 'block';
-            document.getElementById(`${type}Result`).style.display = 'none';
-            
-            if (type === 'script') {
-                const btn = document.getElementById('generateBtn');
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-3"></i>Generating Script...<i class="fas fa-magic ms-3"></i>';
-            }
-        }
-
-        function pollProgress(type, jobId) {
-            fetch(`/api/progress/${jobId}`)
-                .then(response => response.json())
-                .then(data => {
-                    updateProgress(type, data);
-                    
-                    if (data.status === 'processing') {
-                        setTimeout(() => pollProgress(type, jobId), 1000);
-                    } else if (data.status === 'completed') {
-                        showResult(type, data);
-                    } else if (data.status === 'error') {
-                        showError(type, data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error polling progress:', error);
-                    showError(type, 'Error checking progress');
-                });
-        }
-
-        function updateProgress(type, data) {
-            const progressBar = document.querySelector(`#${type}Progress .progress-bar`);
-            const progressMessage = document.querySelector(`#${type}Progress .progress-message`);
-            
-            progressBar.style.width = data.progress + '%';
-            progressMessage.textContent = data.message;
-        }
-
-        function showResult(type, data) {
-            document.getElementById(`${type}Progress`).style.display = 'none';
-            document.getElementById(`${type}Result`).style.display = 'block';
-            
-            if (type === 'script') {
-                document.getElementById('scriptFilename').textContent = data.filename;
-                document.getElementById('downloadScript').onclick = () => downloadFile(data.output_file);
-                currentScriptPath = data.output_file;
-                
-                // Re-enable generate button
-                const btn = document.getElementById('generateBtn');
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-magic me-3"></i>Generate Podcast Script<i class="fas fa-arrow-right ms-3"></i>';
-                
-                // Scroll to result
-                document.getElementById('scriptResult').scrollIntoView({ behavior: 'smooth' });
-                
-            } else if (type === 'audio') {
-                document.getElementById('audioFilename').textContent = data.filename;
-                document.getElementById('downloadAudio').onclick = () => downloadFile(data.output_file);
-                
-                // Scroll to result
-                document.getElementById('audioResult').scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-
-        function showError(type, message) {
-            document.getElementById(`${type}Progress`).style.display = 'none';
-            document.getElementById(`${type}Result`).innerHTML = 
-                `<div class="alert alert-danger">
-                    <h5 class="alert-heading">
-                        <i class="fas fa-exclamation-triangle me-3"></i>
-                        Generation Failed
-                    </h5>
-                    <p class="mb-0">${message}</p>
-                </div>`;
-            document.getElementById(`${type}Result`).style.display = 'block';
-            
-            if (type === 'script') {
-                const btn = document.getElementById('generateBtn');
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-magic me-3"></i>Generate Podcast Script<i class="fas fa-arrow-right ms-3"></i>';
-            }
-        }
-
-        function showAlert(message, type) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-            alertDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-            document.body.appendChild(alertDiv);
-            
-            setTimeout(() => {
-                if (alertDiv.parentNode) {
-                    alertDiv.remove();
-                }
-            }, 5000);
-        }
-
-        function downloadFile(filepath) {
-            window.open(`/api/download/${filepath}`, '_blank');
         }
     </script>
 </body>
