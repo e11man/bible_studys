@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bible Podcast Generator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --secondary-gradient: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 50%, #6366f1 100%);
+            --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --dark-gradient: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --shadow-xl: 0 35px 60px -12px rgba(0, 0, 0, 0.3);
+            --border-radius: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            transition: var(--transition);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        .hero-section {
+            background: transparent;
+            padding: 4rem 0 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="white" stop-opacity="0.1"/><stop offset="100%" stop-color="white" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="150" fill="url(%23a)"/><circle cx="800" cy="300" r="100" fill="url(%23a)"/><circle cx="300" cy="700" r="120" fill="url(%23a)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 3.5rem;
+            color: white;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 300;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-xl);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 40px 70px -12px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 1.5rem 2rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+            position: relative;
+        }
+
+        .card-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 0.875rem 1rem;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            background: white;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .btn {
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 0.875rem 2rem;
+            transition: var(--transition);
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            font-size: 1.1rem;
+            padding: 1rem 3rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid #6366f1;
+            color: #6366f1;
+            background: transparent;
+        }
+
+        .btn-outline-primary:hover {
+            background: #6366f1;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-secondary {
+            border: 2px solid #6b7280;
+            color: #6b7280;
+            background: transparent;
+        }
+
+        .btn-outline-secondary:hover {
+            background: #6b7280;
+            color: white;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 50px;
+            background: rgba(99, 102, 241, 0.1);
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: var(--primary-gradient);
+            border-radius: 50px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-container {
+            display: none;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .progress-container h5 {
+            color: #6366f1;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .progress-message {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .job-result {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .alert {
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 1.5rem 2rem;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #065f46;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #1e40af;
+        }
+
+        .alert-light {
+            background: linear-gradient(135deg, rgba(243, 244, 246, 0.8), rgba(229, 231, 235, 0.8));
+            border: 1px solid rgba(209, 213, 219, 0.3);
+            color: #374151;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            border-radius: 12px;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .file-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .commentary-section {
+            margin-top: 2rem;
+        }
+
+        .commentary-toggle {
+            background: rgba(107, 114, 128, 0.1);
+            border: 1px solid rgba(107, 114, 128, 0.2);
+            color: #6b7280;
+        }
+
+        .commentary-toggle:hover {
+            background: #6b7280;
+            color: white;
+        }
+
+        .badge {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+
+        .bg-success {
+            background: var(--success-gradient) !important;
+        }
+
+        .bg-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+        }
+
+        .bg-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+        }
+
+        .bg-secondary {
+            background: linear-gradient(135deg, #6b7280, #4b5563) !important;
+        }
+
+        .config-status {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .input-group {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .input-group .form-control {
+            border-radius: 12px 0 0 12px;
+            border-right: none;
+        }
+
+        .input-group .btn {
+            border-radius: 0 12px 12px 0;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .floating-shape:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            top: 20%;
+            right: 10%;
+            animation-delay: 5s;
+        }
+
+        .floating-shape:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 10s;
+        }
+
+        .floating-shape:nth-child(4) {
+            bottom: 10%;
+            right: 20%;
+            animation-delay: 15s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(5deg); }
+            66% { transform: translateY(10px) rotate(-5deg); }
+        }
+
+        .icon-highlight {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        footer {
+            background: var(--dark-gradient);
+            color: white;
+            margin-top: 4rem;
+        }
+
+        .validation-success {
+            border-color: #10b981 !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+        }
+
+        .validation-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .glass-card {
+                margin: 1rem;
+            }
+            
+            .btn-primary {
+                font-size: 1rem;
+                padding: 0.875rem 2rem;
+            }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Background Shapes -->
+    <div class="floating-shapes">
+        <div class="floating-shape">
+            <i class="fas fa-book" style="font-size: 80px; color: rgba(255,255,255,0.1);"></i>
+        </div>
+        <div class="floating-shape">
+            <i class="fas fa-microphone" style="font-size: 60px; color: rgba(255,255,255,0.1);"></i>
+        </div>
+        <div class="floating-shape">
+            <i class="fas fa-headphones" style="font-size: 70px; color: rgba(255,255,255,0.1);"></i>
+        </div>
+        <div class="floating-shape">
+            <i class="fas fa-cross" style="font-size: 50px; color: rgba(255,255,255,0.1);"></i>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h1 class="hero-title">
+                        <i class="fas fa-microphone-alt me-3 icon-highlight"></i>
+                        Bible Podcast Generator
+                    </h1>
+                    <p class="hero-subtitle">Transform sacred scripture and theological commentary into professional, AI-powered podcast experiences</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Main Form -->
+        <div class="row">
+            <div class="col-lg-10 col-xl-8 mx-auto">
+                <div class="glass-card mb-5">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-magic me-3"></i>
+                            Generate Podcast Script
+                        </h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="podcastForm">
+                            <!-- Bible Version Selection -->
+                            <div class="mb-4">
+                                <label for="bibleVersion" class="form-label">
+                                    <i class="fas fa-bible me-2 icon-highlight"></i>
+                                    Bible Translation
+                                </label>
+                                <select class="form-select" id="bibleVersion" required>
+                                    <option value="">✨ Loading available translations...</option>
+                                </select>
+                                <div class="form-text text-muted">
+                                    Select your preferred Bible translation for the podcast
+                                </div>
+                            </div>
+
+                            <!-- Passage Input -->
+                            <div class="mb-4">
+                                <label for="passage" class="form-label">
+                                    <i class="fas fa-bookmark me-2 icon-highlight"></i>
+                                    Scripture Passage
+                                </label>
+                                <input type="text" class="form-control" id="passage" 
+                                       placeholder="Genesis 1-3, Psalms 23-25, Matthew 5-7..." required>
+                                <div class="form-text text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Format: BookName StartChapter-EndChapter (e.g., "Psalms 1-5")
+                                </div>
+                                <div id="passageValidation" class="mt-3"></div>
+                            </div>
+
+                            <!-- Commentary Section -->
+                            <div class="commentary-section">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <label for="commentary" class="form-label mb-0">
+                                        <i class="fas fa-scroll me-2 icon-highlight"></i>
+                                        Theological Commentary
+                                        <span class="badge bg-secondary ms-2">Optional</span>
+                                    </label>
+                                    <button type="button" class="btn btn-sm commentary-toggle" id="toggleCommentary">
+                                        <i class="fas fa-eye-slash me-2"></i>
+                                        Hide Commentary
+                                    </button>
+                                </div>
+                                <div id="commentaryContainer">
+                                    <textarea class="form-control" id="commentary" rows="12" 
+                                              placeholder="Paste your theological commentary here...
+
+If left empty, the generator will create a direct Bible reading script with natural transitions between chapters and verses.
+
+For commentary-based podcasts, paste your theological analysis, and the system will intelligently weave together Scripture passages with your insights."></textarea>
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="fas fa-lightbulb me-1"></i>
+                                        <strong>Pro Tip:</strong> Leave empty for pure Scripture reading, or add commentary for in-depth theological analysis
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Generate Button -->
+                            <div class="d-grid gap-2 mt-5">
+                                <button type="submit" class="btn btn-primary btn-lg pulse-animation" id="generateBtn">
+                                    <i class="fas fa-magic me-3"></i>
+                                    Generate Podcast Script
+                                    <i class="fas fa-arrow-right ms-3"></i>
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Progress Section -->
+                        <div id="scriptProgress" class="progress-container">
+                            <h5>
+                                <i class="fas fa-cog fa-spin me-3"></i>
+                                Crafting Your Podcast Script
+                            </h5>
+                            <div class="progress mb-3">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                     role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-message">Initializing the scripture processing engine...</div>
+                        </div>
+
+                        <!-- Script Result -->
+                        <div id="scriptResult" class="job-result">
+                            <div class="alert alert-success">
+                                <h5 class="alert-heading">
+                                    <i class="fas fa-check-circle me-3"></i>
+                                    Script Generated Successfully!
+                                </h5>
+                                <p class="mb-3">Your podcast script has been created and is ready for download or audio generation.</p>
+                                <div class="file-item">
+                                    <span>
+                                        <i class="fas fa-file-text me-3" style="font-size: 1.2rem; color: #6366f1;"></i>
+                                        <strong id="scriptFilename"></strong>
+                                    </span>
+                                    <div>
+                                        <button class="btn btn-outline-primary me-3" id="downloadScript">
+                                            <i class="fas fa-download me-2"></i>
+                                            Download Script
+                                        </button>
+                                        <button class="btn btn-success" id="generateAudioBtn">
+                                            <i class="fas fa-volume-up me-2"></i>
+                                            Generate Audio
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audio Generation Section -->
+                <div class="glass-card mb-5" id="audioSection" style="display: none;">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-broadcast-tower me-3"></i>
+                            Audio Generation
+                        </h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Audio Progress -->
+                        <div id="audioProgress" class="progress-container">
+                            <h5>
+                                <i class="fas fa-microphone fa-pulse me-3"></i>
+                                Creating Professional Audio
+                            </h5>
+                            <div class="progress mb-3">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                     role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-message">Initializing text-to-speech engine...</div>
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-clock me-2"></i>
+                                <strong>Please be patient:</strong> Audio generation uses advanced AI voice synthesis and may take several minutes depending on script length.
+                            </div>
+                        </div>
+
+                        <!-- Audio Result -->
+                        <div id="audioResult" class="job-result">
+                            <div class="alert alert-success">
+                                <h5 class="alert-heading">
+                                    <i class="fas fa-check-circle me-3"></i>
+                                    Audio Generated Successfully!
+                                </h5>
+                                <p class="mb-3">Your professional podcast audio is ready! Features dual-voice narration with HOST and GUEST speakers.</p>
+                                <div class="file-item">
+                                    <span>
+                                        <i class="fas fa-file-audio me-3" style="font-size: 1.2rem; color: #10b981;"></i>
+                                        <strong id="audioFilename"></strong>
+                                    </span>
+                                    <button class="btn btn-outline-primary" id="downloadAudio">
+                                        <i class="fas fa-download me-2"></i>
+                                        Download Audio
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuration Section -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-sliders-h me-3"></i>
+                            System Configuration
+                        </h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Audio Configuration -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">
+                                <i class="fas fa-microphone me-2 icon-highlight"></i>
+                                Audio Generation Setup
+                            </h5>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <div class="config-status">
+                                        <i class="fas fa-puzzle-piece me-3" style="color: #6366f1;"></i>
+                                        <div>
+                                            <strong>Dependencies:</strong>
+                                            <span id="depsStatus" class="badge ms-2"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="config-status">
+                                        <i class="fas fa-key me-3" style="color: #6366f1;"></i>
+                                        <div>
+                                            <strong>Google Cloud:</strong>
+                                            <span id="credsStatus" class="badge ms-2"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="credentialsPath" class="form-label">
+                                    <i class="fas fa-cloud me-2"></i>
+                                    Google Cloud Credentials Path
+                                </label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="credentialsPath" 
+                                           placeholder="/path/to/service-account-credentials.json">
+                                    <button class="btn btn-outline-secondary" type="button" id="setCredentials">
+                                        <i class="fas fa-save me-2"></i>
+                                        Set Path
+                                    </button>
+                                </div>
+                                <div class="form-text text-muted mt-2">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Path to your Google Cloud Text-to-Speech service account JSON file
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Instructions -->
+                        <div class="alert alert-light border">
+                            <h5 class="alert-heading">
+                                <i class="fas fa-graduation-cap me-2"></i>
+                                Quick Setup Guide
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ol class="mb-0">
+                                        <li><strong>Bible Files:</strong> Ensure JSON files are in <code>bibles/</code> directory</li>
+                                        <li><strong>Dependencies:</strong> Run <code>pip install google-cloud-texttospeech pydub</code></li>
+                                    </ol>
+                                </div>
+                                <div class="col-md-6">
+                                    <ol start="3" class="mb-0">
+                                        <li><strong>Google Cloud:</strong> Set up Text-to-Speech API & download service account JSON</li>
+                                        <li><strong>Credentials:</strong> Configure the file path above</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="py-5">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-lg-6 mx-auto">
+                    <h5 class="text-white mb-3">
+                        <i class="fas fa-bible me-2"></i>
+                        Bible Podcast Generator
+                    </h5>
+                    <p class="text-white-50 mb-0">
+                        Transforming sacred scripture into accessible, professional audio experiences through the power of AI
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global variables
+        let currentScriptJob = null;
+        let currentAudioJob = null;
+        let currentScriptPath = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBibleVersions();
+            loadAudioConfig();
+            setupEventListeners();
+            initializeAnimations();
+        });
+
+        function initializeAnimations() {
+            // Remove pulse animation after initial load
+            setTimeout(() => {
+                document.getElementById('generateBtn').classList.remove('pulse-animation');
+            }, 3000);
+        }
+
+        function loadBibleVersions() {
+            fetch('/api/versions')
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById('bibleVersion');
+                    select.innerHTML = '<option value="">📖 Select a Bible translation...</option>';
+                    
+                    data.versions.forEach(version => {
+                        const option = document.createElement('option');
+                        option.value = version;
+                        option.textContent = `📜 ${version}`;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading versions:', error);
+                    document.getElementById('bibleVersion').innerHTML = 
+                        '<option value="">❌ Error loading translations</option>';
+                });
+        }
+
+        function loadAudioConfig() {
+            fetch('/api/config/audio')
+                .then(response => response.json())
+                .then(data => {
+                    const depsStatus = document.getElementById('depsStatus');
+                    const credsStatus = document.getElementById('credsStatus');
+                    
+                    depsStatus.textContent = data.has_audio_generation ? '✅ Available' : '❌ Missing';
+                    depsStatus.className = `badge ${data.has_audio_generation ? 'bg-success' : 'bg-danger'}`;
+                    
+                    credsStatus.textContent = data.has_credentials ? '✅ Configured' : '⚠️ Not Set';
+                    credsStatus.className = `badge ${data.has_credentials ? 'bg-success' : 'bg-warning'}`;
+                    
+                    if (data.credentials_path) {
+                        document.getElementById('credentialsPath').value = data.credentials_path;
+                    }
+                });
+        }
+
+        function setupEventListeners() {
+            // Form submission
+            document.getElementById('podcastForm').addEventListener('submit', handleFormSubmit);
+            
+            // Passage validation
+            document.getElementById('passage').addEventListener('blur', validatePassage);
+            document.getElementById('passage').addEventListener('input', clearValidation);
+            
+            // Commentary toggle
+            document.getElementById('toggleCommentary').addEventListener('click', toggleCommentary);
+            
+            // Audio generation
+            document.getElementById('generateAudioBtn').addEventListener('click', generateAudio);
+            
+            // Credentials setting
+            document.getElementById('setCredentials').addEventListener('click', setCredentials);
+        }
+
+        function clearValidation() {
+            const passageInput = document.getElementById('passage');
+            passageInput.classList.remove('validation-success', 'validation-error');
+            document.getElementById('passageValidation').innerHTML = '';
+        }
+
+        function validatePassage() {
+            const version = document.getElementById('bibleVersion').value;
+            const passage = document.getElementById('passage').value;
+            const passageInput = document.getElementById('passage');
+            
+            if (!version || !passage) return;
+            
+            fetch('/api/validate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ version, passage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const validation = document.getElementById('passageValidation');
+                if (data.valid) {
+                    passageInput.classList.remove('validation-error');
+                    passageInput.classList.add('validation-success');
+                    validation.innerHTML = `
+                        <div class="alert alert-success py-2">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong>Valid passage!</strong> Ready to generate your podcast.
+                        </div>
+                    `;
+                } else {
+                    passageInput.classList.remove('validation-success');
+                    passageInput.classList.add('validation-error');
+                    validation.innerHTML = `
+                        <div class="alert alert-danger py-2">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Invalid passage:</strong> ${data.message}
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        function toggleCommentary() {
+            const container = document.getElementById('commentaryContainer');
+            const button = document.getElementById('toggleCommentary');
+            
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                button.innerHTML = '<i class="fas fa-eye-slash me-2"></i>Hide Commentary';
+                button.classList.remove('btn-outline-secondary');
+                button.classList.add('commentary-toggle');
+            } else {
+                container.style.display = 'none';
+                button.innerHTML = '<i class="fas fa-eye me-2"></i>Show Commentary';
+                button.classList.remove('commentary-toggle');
+                button.classList.add('btn-outline-secondary');
+            }
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const version = document.getElementById('bibleVersion').value;
+            const passage = document.getElementById('passage').value;
+            const commentary = document.getElementById('commentary').value;
+            
+            if (!version || !passage) {
+                showAlert('Please select a Bible translation and enter a passage.', 'warning');
+                return;
+            }
+            
+            // Show progress
+            showProgress('script');
+            
+            // Start generation
+            fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ version, passage, commentary })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.job_id) {
+                    currentScriptJob = data.job_id;
+                    pollProgress('script', data.job_id);
+                } else {
+                    showError('script', 'Failed to start generation');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('script', 'Network error occurred');
+            });
+        }
+
+        function generateAudio() {
+            if (!currentScriptPath) {
+                showAlert('No script file available for audio generation.', 'warning');
+                return;
+            }
+            
+            document.getElementById('audioSection').style.display = 'block';
+            document.getElementById('audioSection').scrollIntoView({ behavior: 'smooth' });
+            showProgress('audio');
+            
+            fetch('/api/generate-audio', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ script_path: currentScriptPath })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.job_id) {
+                    currentAudioJob = data.job_id;
+                    pollProgress('audio', data.job_id);
+                } else {
+                    showError('audio', data.error || 'Failed to start audio generation');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showError('audio', 'Network error occurred');
+            });
+        }
+
+        function setCredentials() {
+            const credentialsPath = document.getElementById('credentialsPath').value;
+            
+            if (!credentialsPath) {
+                showAlert('Please enter a credentials path.', 'warning');
+                return;
+            }
+            
+            fetch('/api/config/audio', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ credentials_path: credentialsPath })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('Credentials path set successfully!', 'success');
+                    loadAudioConfig();
+                } else {
+                    showAlert('Error: ' + data.message, 'danger');
+                }
+            });
+        }
+
+        function showProgress(type) {
+            document.getElementById(`${type}Progress`).style.display = 'block';
+            document.getElementById(`${type}Result`).style.display = 'none';
+            
+            if (type === 'script') {
+                const btn = document.getElementById('generateBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-3"></i>Generating Script...<i class="fas fa-magic ms-3"></i>';
+            }
+        }
+
+        function pollProgress(type, jobId) {
+            fetch(`/api/progress/${jobId}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateProgress(type, data);
+                    
+                    if (data.status === 'processing') {
+                        setTimeout(() => pollProgress(type, jobId), 1000);
+                    } else if (data.status === 'completed') {
+                        showResult(type, data);
+                    } else if (data.status === 'error') {
+                        showError(type, data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error polling progress:', error);
+                    showError(type, 'Error checking progress');
+                });
+        }
+
+        function updateProgress(type, data) {
+            const progressBar = document.querySelector(`#${type}Progress .progress-bar`);
+            const progressMessage = document.querySelector(`#${type}Progress .progress-message`);
+            
+            progressBar.style.width = data.progress + '%';
+            progressMessage.textContent = data.message;
+        }
+
+        function showResult(type, data) {
+            document.getElementById(`${type}Progress`).style.display = 'none';
+            document.getElementById(`${type}Result`).style.display = 'block';
+            
+            if (type === 'script') {
+                document.getElementById('scriptFilename').textContent = data.filename;
+                document.getElementById('downloadScript').onclick = () => downloadFile(data.output_file);
+                currentScriptPath = data.output_file;
+                
+                // Re-enable generate button
+                const btn = document.getElementById('generateBtn');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic me-3"></i>Generate Podcast Script<i class="fas fa-arrow-right ms-3"></i>';
+                
+                // Scroll to result
+                document.getElementById('scriptResult').scrollIntoView({ behavior: 'smooth' });
+                
+            } else if (type === 'audio') {
+                document.getElementById('audioFilename').textContent = data.filename;
+                document.getElementById('downloadAudio').onclick = () => downloadFile(data.output_file);
+                
+                // Scroll to result
+                document.getElementById('audioResult').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function showError(type, message) {
+            document.getElementById(`${type}Progress`).style.display = 'none';
+            document.getElementById(`${type}Result`).innerHTML = 
+                `<div class="alert alert-danger">
+                    <h5 class="alert-heading">
+                        <i class="fas fa-exclamation-triangle me-3"></i>
+                        Generation Failed
+                    </h5>
+                    <p class="mb-0">${message}</p>
+                </div>`;
+            document.getElementById(`${type}Result`).style.display = 'block';
+            
+            if (type === 'script') {
+                const btn = document.getElementById('generateBtn');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic me-3"></i>Generate Podcast Script<i class="fas fa-arrow-right ms-3"></i>';
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        function downloadFile(filepath) {
+            window.open(`/api/download/${filepath}`, '_blank');
+        }
+    </script>
+</body>
+</html>
