@@ -1,0 +1,2 @@
+python3 bible.py --version ESV --commentary-file commentary.txt 
+#this is a test
