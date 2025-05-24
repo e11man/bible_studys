@@ -267,6 +267,57 @@ class PodcastScriptGenerator:
                 sections.append((verse_ref, section_title, commentary))
         
         return sections
+
+    def extract_theological_commentary_sections(self, commentary_text: str) -> List[Tuple[str, str, str]]:
+        """
+        Extract sections from theological commentary that's organized by chapters and subsections.
+        Handles format like:
+        ## Chapter 1: The Two Ways - Foundation of Wisdom
+        ### Section 1: Psalm 1:1-3 - The Blessed Man's Character
+        
+        Returns list of tuples: (verse_reference, section_title, commentary)
+        """
+        sections = []
+        lines = commentary_text.split('\n')
+        current_chapter = None
+        current_section = None
+        current_commentary = []
+        
+        for line in lines:
+            line = line.strip()
+            
+            # Check for chapter headers: ## Chapter X: BookName Chapter - Title
+            chapter_match = re.match(r'## Chapter \d+: (.+)', line)
+            if chapter_match:
+                current_chapter = chapter_match.group(1)
+                continue
+            
+            # Check for section headers: ### Section X: BookName Chapter:Verse-Verse - Title
+            section_match = re.match(r'### Section \d+: ((?:\d+\s+)?[A-Za-z]+(?:\s+[A-Za-z]+)*\s+\d+:\d+-\d+) - (.+)', line)
+            if section_match:
+                # Save previous section if it exists
+                if current_section:
+                    verse_ref, section_title = current_section
+                    commentary = '\n'.join(current_commentary).strip()
+                    if commentary:
+                        sections.append((verse_ref, section_title, commentary))
+                
+                # Start new section
+                current_section = (section_match.group(1), section_match.group(2))
+                current_commentary = []
+                
+            elif current_section and line and not line.startswith('#'):
+                # Add to current commentary (skip headers but include bold markdown)
+                current_commentary.append(line)
+        
+        # Don't forget the last section
+        if current_section:
+            verse_ref, section_title = current_section
+            commentary = '\n'.join(current_commentary).strip()
+            if commentary:
+                sections.append((verse_ref, section_title, commentary))
+        
+        return sections
     
     def clean_commentary(self, commentary: str) -> str:
         """Clean up the commentary text for better podcast reading."""
@@ -486,11 +537,19 @@ class PodcastScriptGenerator:
             print("Commentary text is empty or too short for processing.")
             return None
             
+        # Try the standard verse reference format first
         sections = self.extract_verse_references(commentary_text)
+        
+        # If no sections found, try the theological commentary format
+        if not sections:
+            print("Standard format not found, trying theological commentary format...")
+            sections = self.extract_theological_commentary_sections(commentary_text)
         
         if not sections:
             print("No sections found. Commentary might not be in the expected format.")
-            print("Expected format: 'Section X: BookName Chapter:Verse-Verse - Title'")
+            print("Expected formats:")
+            print("  1. 'Section X: BookName Chapter:Verse-Verse - Title'")
+            print("  2. '### Section X: BookName Chapter:Verse-Verse - Title'")
             return None
         
         print(f"Found {len(sections)} sections. Generating script...")
